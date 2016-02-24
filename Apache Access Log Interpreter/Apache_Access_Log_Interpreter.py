@@ -39,7 +39,6 @@ def parseFile(filePath, customer, data):
                     data[customer.index(tempCustomer)] += tempData
             except UnboundLocalError:
                 customError('UnboundLocalError', 'Could Not Parse File Correctly')
-                exit(0)
     return customer, data
 
 def main():
@@ -60,7 +59,8 @@ def main():
     with open(resultsFile, 'w') as resultsF:
         for i in customer:
             resultsF.write('{},{}\n'.format(i, data[customer.index(i)]))
-        resultsF.write('That took {} seconds'.format(time() - startTime))
+        #Debug Runnning Timer
+        #resultsF.write('That took {} seconds'.format(time() - startTime))
 
 if __name__ == '__main__':
     exit(int(main() or 0))
