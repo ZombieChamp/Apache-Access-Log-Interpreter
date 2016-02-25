@@ -1,3 +1,5 @@
+#Build 1.1.1
+
 from sys import exit
 from tkinter import Tk, messagebox
 from tkinter.filedialog import askdirectory, asksaveasfilename
@@ -48,14 +50,16 @@ def main():
     #Stop main window opening
     Tk().withdraw()
     selectedDirectory = askdirectory(title = 'Select log file directory', initialdir = '/')
-    if resultsFile == '':
+    if selectedDirectory == '':
         customError('FileNotFoundError', 'No Input Directory Provided')
     resultsFile = asksaveasfilename(title = 'Select results as...', initialdir = '/', filetypes = fileFormat, defaultextension = '.csv')
     if resultsFile == '':
         customError('FileNotFoundError', 'No Output File Provided')
     startTime = time()
     for selectedFile in listdir(selectedDirectory):
-        parseFile(selectedDirectory + "/" + selectedFile, customer, data)
+        #Only scan access_SSL files in directory
+        if selectedFile.startswith('access_SSL'):
+            parseFile(selectedDirectory + "/" + selectedFile, customer, data)
     with open(resultsFile, 'w') as resultsF:
         for i in customer:
             resultsF.write('{},{}\n'.format(i, data[customer.index(i)]))
