@@ -1,4 +1,4 @@
-#Build 1.1.1
+#Build 1.1.2
 
 from sys import exit
 from tkinter import Tk, messagebox
@@ -20,6 +20,7 @@ def customError(type, message):
 
 def parseFile(filePath, customer, data):
     with open(filePath) as logFile:
+        print(filePath)
         for logLine in logFile:
             try:
                 if logLine.endswith('\n'):
@@ -34,11 +35,11 @@ def parseFile(filePath, customer, data):
                     else:
                         tempCustomer = find_between(find_between(find_between(logLine, ' \"', '\" '), ' ', ' '), '/', '/')
                     #Add customer to list if not detected before
-                if tempCustomer not in customer:
-                    customer.append(tempCustomer)
-                    data.append(tempData)
-                else:
-                    data[customer.index(tempCustomer)] += tempData
+                    if tempCustomer not in customer:
+                        customer.append(tempCustomer)
+                        data.append(tempData)
+                    else:
+                        data[customer.index(tempCustomer)] += tempData
             except UnboundLocalError:
                 customError('UnboundLocalError', 'Could Not Parse File Correctly')
     return customer, data
