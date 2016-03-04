@@ -1,4 +1,4 @@
-#Build 1.1.1
+#Build 1.2.0
 
 from sys import exit
 from tkinter import Tk, messagebox
@@ -20,6 +20,7 @@ def customError(type, message):
 
 def parseFile(filePath, customer, data):
     with open(filePath) as logFile:
+        print(filePath)
         for logLine in logFile:
             try:
                 tempCustomer = ''
@@ -33,14 +34,22 @@ def parseFile(filePath, customer, data):
                     #Check if request is from local load balancer or direct
                     if  find_between(find_between(logLine, ' \"', '\" '), ' ', ' ')[:5] == 'https':
                         tempCustomer = find_between(find_between(find_between(logLine, ' \"', '\" '), ' ', ' '), 'm/', '/')
+                        #Check if REST request
+                        if len(find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')) >= 5:
+                            if find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')[4] == 'rest':
+                                tempCustomer += '/rest'
                     else:
                         tempCustomer = find_between(find_between(find_between(logLine, ' \"', '\" '), ' ', ' '), '/', '/')
+                        #Check if REST request
+                        if len(find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')) >= 3:
+                            if find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')[2] == 'rest':
+                                tempCustomer += '/rest'
                     #Add customer to list if not detected before
-                if tempCustomer not in customer:
-                    customer.append(tempCustomer)
-                    data.append(tempData)
-                else:
-                    data[customer.index(tempCustomer)] += tempData
+                    if tempCustomer not in customer:
+                        customer.append(tempCustomer)
+                        data.append(tempData)
+                    else:
+                        data[customer.index(tempCustomer)] += tempData
             except UnboundLocalError:
                 print('{} in {}'.format(logLine, logFile))
                 customError('UnboundLocalError', 'Could Not Parse File Correctly')
