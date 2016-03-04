@@ -23,8 +23,6 @@ def parseFile(filePath, customer, data):
         print(filePath)
         for logLine in logFile:
             try:
-                tempCustomer = ''
-                temp
                 if logLine.endswith('\n'):
                     logLine = logLine[:-1]
                 tempLine = logLine.split(' ')
@@ -51,7 +49,6 @@ def parseFile(filePath, customer, data):
                     else:
                         data[customer.index(tempCustomer)] += tempData
             except UnboundLocalError:
-                print('{} in {}'.format(logLine, logFile))
                 customError('UnboundLocalError', 'Could Not Parse File Correctly')
     return customer, data
 
