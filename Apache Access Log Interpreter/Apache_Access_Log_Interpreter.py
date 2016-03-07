@@ -1,4 +1,4 @@
-#Build 2.2.0
+#Build 2.2.1
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -82,9 +82,9 @@ def main(argv):
     startTime = time()
     walkDirectory(selectedDirectoryA, timeIntMonth, timeYear, customer, data)
     walkDirectory(selectedDirectoryB, timeIntMonth, timeYear, customer, data)
-    with open(resultsFile, 'w') as resultsF:
-        for i in customer:
-            resultsF.write('{},{}\n'.format(i, data[customer.index(i)]))
+    with open(resultsFile, 'w') as currentFile:
+        for name in customer:
+            currentFile.write('{},{}\n'.format(name, data[customer.index(name)]))
     print('That took {} seconds'.format(time() - startTime))
 
 if __name__ == '__main__':
