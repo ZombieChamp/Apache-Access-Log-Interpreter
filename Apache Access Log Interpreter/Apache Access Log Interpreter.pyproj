@@ -12,6 +12,9 @@
     <OutputPath>.</OutputPath>
     <Name>Apache Access Log Interpreter</Name>
     <RootNamespace>Apache Access Log Interpreter</RootNamespace>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <CommandLineArguments>-s "C:/Users/MMawson/Desktop/New folder2" -o "C:/Users/MMawson/Desktop"</CommandLineArguments>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
