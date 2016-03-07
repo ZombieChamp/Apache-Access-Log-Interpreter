@@ -1,6 +1,6 @@
-#Build 2.0.1
+#Build 2.1.0
 
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
 from os import listdir
 from sys import argv, exit
@@ -48,26 +48,39 @@ def parseFile(filePath, customer, data):
 def main(argv):
     customer = []
     data = []
-    resultsFile = ''
-    selectedDirectory = ''
+    selectedDirectoryA = ''
+    selectedDirectoryB = ''
+    resultsDirectory = ''
+    #Get argument input
     try:
-        opts, args = getopt(argv, 's:o:', ['source=','output='])
+        opts, args = getopt(argv, 'p:s:o:', ['primary=', 'secondary=','output='])
     except GetoptError:
-        print('Apache_Access_Log_Interpreter.py -s <sourcedirectory> -o <outputdirectory>')
+        print('Apache_Access_Log_Interpreter.py -p <primarysourcedirectory> -s <secondarysourcedirectory> -o <outputdirectory>')
         exit(1)
     for opt, arg in opts:
-        if opt in ('-s', '--source'):
-            selectedDirectory = arg
+        if opt in ('-p', '--primary'):
+            selectedDirectoryA = arg
+        elif opt in ('-s', '--secondary'):
+            selectedDirectoryB = arg
         elif opt in ('-o', '--output'):
-            resultsFile = arg
-    timeNow = datetime.now()
-    timeNow = timeNow.strftime('%B')
-    resultsFile = resultsFile + '/AccessLogResults-' + timeNow + '.csv'
+            resultsDirectory = arg
+    #Only scan logs from last month
+    timeNow = date.today()
+    timeFirstDay = timeNow.replace(day = 1)
+    timeLastMonth = timeFirstDay - timedelta(days = 1)
+    timeStringMonth = timeLastMonth.strftime('%B')
+    timeIntMonth = timeLastMonth.strftime('%m')
+    timeYear = timeLastMonth.strftime('%Y')
+    resultsFile = resultsDirectory + '/AccessLogResults-' + timeStringMonth + '.csv'
     startTime = time()
-    for selectedFile in listdir(selectedDirectory):
-        #Only scan access_SSL files in directory
-        if selectedFile.startswith('access_SSL'):
-            parseFile(selectedDirectory + "/" + selectedFile, customer, data)
+    for selectedFile in listdir(selectedDirectoryA):
+        #Only scan access_SSL files in directory with this year and this month
+        if selectedFile.startswith('access_SSL_' + timeYear + '-' + timeIntMonth):
+            parseFile(selectedDirectoryA + "/" + selectedFile, customer, data)
+    for selectedFile in listdir(selectedDirectoryB):
+        #Only scan access_SSL files in directory with this year and this month
+        if selectedFile.startswith('access_SSL_' + timeYear + '-' + timeIntMonth):
+            parseFile(selectedDirectoryB + "/" + selectedFile, customer, data)
     with open(resultsFile, 'w') as resultsF:
         for i in customer:
             resultsF.write('{},{}\n'.format(i, data[customer.index(i)]))
