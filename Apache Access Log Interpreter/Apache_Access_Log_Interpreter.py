@@ -1,4 +1,4 @@
-#Build 2.2.1
+#Build 2.3.0
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -55,20 +55,17 @@ def parseFile(filePath, customer, data):
 def main(argv):
     customer = []
     data = []
-    selectedDirectoryA = ''
-    selectedDirectoryB = ''
+    inputDirectory = []
     resultsDirectory = ''
     #Get argument input
     try:
-        opts, args = getopt(argv, 'p:s:o:', ['primary=', 'secondary=','output='])
+        opts, args = getopt(argv, 'i:o:', ['input=','output='])
     except GetoptError:
-        print('Apache_Access_Log_Interpreter.py -p <primarysourcedirectory> -s <secondarysourcedirectory> -o <outputdirectory>')
+        print('Apache_Access_Log_Interpreter.py -i <inputdirectories> -o <outputdirectory>')
         exit(1)
     for opt, arg in opts:
-        if opt in ('-p', '--primary'):
-            selectedDirectoryA = arg
-        elif opt in ('-s', '--secondary'):
-            selectedDirectoryB = arg
+        if opt in ('-i', '--input'):
+            inputDirectory = arg.split(',')
         elif opt in ('-o', '--output'):
             resultsDirectory = arg
     #Only scan logs from last month
@@ -80,8 +77,8 @@ def main(argv):
     timeYear = timeLastMonth.strftime('%Y')
     resultsFile = resultsDirectory + '/AccessLogResults-' + timeStringMonth + '.csv'
     startTime = time()
-    walkDirectory(selectedDirectoryA, timeIntMonth, timeYear, customer, data)
-    walkDirectory(selectedDirectoryB, timeIntMonth, timeYear, customer, data)
+    for directory in inputDirectory:
+        walkDirectory(directory, timeIntMonth, timeYear, customer, data)
     with open(resultsFile, 'w') as currentFile:
         for name in customer:
             currentFile.write('{},{}\n'.format(name, data[customer.index(name)]))
