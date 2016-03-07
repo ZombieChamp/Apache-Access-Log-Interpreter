@@ -1,4 +1,4 @@
-#Build 2.1.0
+#Build 2.2.0
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -13,6 +13,13 @@ def find_between(s, first, last):
         return s[start:end]
     except ValueError:
         return ''
+
+def walkDirectory(directory, month, year, customer, data):
+    for selectedFile in listdir(directory):
+        #Only scan access_SSL files in directory with this year and this month
+        if selectedFile.startswith('access_SSL_' + year + '-' + month):
+            parseFile(directory + '/' + selectedFile, customer, data)
+    return customer, data
 
 def parseFile(filePath, customer, data):
     with open(filePath) as logFile:
@@ -73,14 +80,8 @@ def main(argv):
     timeYear = timeLastMonth.strftime('%Y')
     resultsFile = resultsDirectory + '/AccessLogResults-' + timeStringMonth + '.csv'
     startTime = time()
-    for selectedFile in listdir(selectedDirectoryA):
-        #Only scan access_SSL files in directory with this year and this month
-        if selectedFile.startswith('access_SSL_' + timeYear + '-' + timeIntMonth):
-            parseFile(selectedDirectoryA + "/" + selectedFile, customer, data)
-    for selectedFile in listdir(selectedDirectoryB):
-        #Only scan access_SSL files in directory with this year and this month
-        if selectedFile.startswith('access_SSL_' + timeYear + '-' + timeIntMonth):
-            parseFile(selectedDirectoryB + "/" + selectedFile, customer, data)
+    walkDirectory(selectedDirectoryA, timeIntMonth, timeYear, customer, data)
+    walkDirectory(selectedDirectoryB, timeIntMonth, timeYear, customer, data)
     with open(resultsFile, 'w') as resultsF:
         for i in customer:
             resultsF.write('{},{}\n'.format(i, data[customer.index(i)]))
