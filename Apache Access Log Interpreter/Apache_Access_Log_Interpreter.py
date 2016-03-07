@@ -1,4 +1,4 @@
-#Build 2.0.0
+#Build 2.0.1
 
 from datetime import datetime
 from getopt import getopt, GetoptError
@@ -60,9 +60,9 @@ def main(argv):
             selectedDirectory = arg
         elif opt in ('-o', '--output'):
             resultsFile = arg
-    nowT = datetime.now()
-    nowT = nowT.strftime('%B')
-    resultsFile = resultsFile + '/AccessLogResults-' + nowT + '.csv'
+    timeNow = datetime.now()
+    timeNow = timeNow.strftime('%B')
+    resultsFile = resultsFile + '/AccessLogResults-' + timeNow + '.csv'
     startTime = time()
     for selectedFile in listdir(selectedDirectory):
         #Only scan access_SSL files in directory
