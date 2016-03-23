@@ -1,4 +1,4 @@
-#Build 2.4.4
+#Build 2.4.5
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -75,9 +75,7 @@ def main(argv):
         elif opt in ('-o', '--output'):
             resultsDirectory = arg
     #Only scan logs from last month
-    timeNow = date.today()
-    timeFirstDay = timeNow.replace(day = 1)
-    timeLastMonth = timeFirstDay - timedelta(days = 1)
+    timeLastMonth = date.today().replace(day = 1) - timedelta(days = 1)
     timeStringMonth = timeLastMonth.strftime('%B')
     timeIntMonth = timeLastMonth.strftime('%m')
     timeYear = timeLastMonth.strftime('%Y')
