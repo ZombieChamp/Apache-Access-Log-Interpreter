@@ -1,4 +1,4 @@
-#Build 2.3.0
+#Build 2.4.0
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -28,22 +28,26 @@ def parseFile(filePath, customer, data):
             if logLine.endswith('\n'):
                 logLine = logLine[:-1]
             tempLine = logLine.split(' ')
-            #Only log successful requests with HTTP status 2XX and data is known
-            if (tempLine[len(tempLine) - 2][:1] == '2') and (tempLine[len(tempLine) - 1] != '-'):
+            #Only log when data is known
+            if (tempLine[len(tempLine) - 1] != '-'):
                 tempData = int(tempLine[len(tempLine) - 1])
-                #Check if request is from local load balancer or direct
-                if  find_between(find_between(logLine, ' \"', '\" '), ' ', ' ')[:5] == 'https':
-                    tempCustomer = find_between(find_between(find_between(logLine, ' \"', '\" '), ' ', ' '), 'm/', '/')
-                    #Check if REST request
-                    if len(find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')) >= 5:
-                        if find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')[4] == 'rest':
-                            tempCustomer += '/rest'
+                #First log successful requests with HTTP status 2XX
+                if (tempLine[len(tempLine) - 2][:1] == '2'):
+                    #Check if request is from local load balancer or direct
+                    if  find_between(find_between(logLine, ' \"', '\" '), ' ', ' ')[:5] == 'https':
+                        tempCustomer = find_between(find_between(find_between(logLine, ' \"', '\" '), ' ', ' '), 'm/', '/')
+                        #Check if REST request
+                        if len(find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')) >= 5:
+                            if find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')[4] == 'rest':
+                                tempCustomer += '/rest'
+                    else:
+                        tempCustomer = find_between(find_between(find_between(logLine, ' \"', '\" '), ' ', ' '), '/', '/')
+                        #Check if REST request
+                        if len(find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')) >= 3:
+                            if find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')[2] == 'rest':
+                                tempCustomer += '/rest'
                 else:
-                    tempCustomer = find_between(find_between(find_between(logLine, ' \"', '\" '), ' ', ' '), '/', '/')
-                    #Check if REST request
-                    if len(find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')) >= 3:
-                        if find_between(find_between(logLine, ' \"', '\" '), ' ', ' ').split('/')[2] == 'rest':
-                            tempCustomer += '/rest'
+                    tempCustomer = 'ERROR'
                 #Add customer to list if not detected before
                 if tempCustomer not in customer:
                     customer.append(tempCustomer)
