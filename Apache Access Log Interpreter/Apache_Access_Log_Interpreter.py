@@ -1,4 +1,4 @@
-#Build 2.4.5
+#Build 2.4.6
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -42,9 +42,8 @@ def parseFile(filePath, customer, data):
                     else:
                         tempCustomer = find_between(tempFindBetween, '/', '/')
                         arrayID = 2
-                    tempArray = tempFindBetween.split('/')
                     try:
-                        if tempArray[arrayID] == 'rest':
+                        if tempFindBetween.split('/')[arrayID] == 'rest':
                             tempCustomer += '/rest'
                     except IndexError:
                         pass
