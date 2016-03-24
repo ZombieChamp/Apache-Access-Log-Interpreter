@@ -1,4 +1,4 @@
-#Build 2.5.0
+#Build 2.6.0
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -25,35 +25,32 @@ def parseFile(filePath, customer, data):
     with open(filePath) as logFile:
         print(filePath)
         for logLine in logFile:
-            if logLine.endswith('\n'):
+            if logLine.endswith('\n'):#Remove Trailing n
                 logLine = logLine[:-1]
             tempLine = logLine.split(' ')
             tempLineLen = len(tempLine)
-            #Only log when data is known
-            if (tempLine[tempLineLen - 1] != '-'):
+            if (tempLine[tempLineLen - 1] != '-'): #Don't process if data unknown
                 tempData = int(tempLine[tempLineLen - 1])
-                #First log successful requests with HTTP status 2XX
-                if (tempLine[tempLineLen - 2][:1] == '2'):
+                if (tempLine[tempLineLen - 2][:1] == '2'): #Check for successful requests
                     tempFindBetween = find_between(find_between(logLine, ' \"', '\" '), ' ', ' ')
-                    #Check if request is from local loadbalancer or direct
-                    if  tempFindBetween[:5] == 'https':
+                    if  tempFindBetween[:5] == 'https': #Loadbalanced requests
                         tempCustomer = find_between(tempFindBetween, 'm/', '/')
                         arrayID = 4
-                    else:
+                    else: #Regular requests
                         tempCustomer = find_between(tempFindBetween, '/', '/')
                         arrayID = 2
-                    try:
-                        if tempFindBetween.split('/')[arrayID] == 'rest':
+                    tempArray = tempFindBetween.split('/')
+                    if len(tempArray) > arrayID: #Don't indexoutofbounds
+                        if tempArray[arrayID] == 'rest': #Categorise REST requests seperatly
                             tempCustomer += '/rest'
-                    except IndexError:
-                        pass
-                else:
+                else: #Unsuccessful requests are logged as errors
                     tempCustomer = 'ERROR'
-                #Add customer to list if not detected before
-                if tempCustomer not in customer:
+                if tempCustomer == '': #Define blank as ROOT directory
+                    tempCustomer = 'ROOT'
+                if tempCustomer not in customer:  #Add customer to list if not detected before
                     customer.append(tempCustomer)
                     data.append(tempData)
-                else:
+                else: #Add data to customer if found
                     data[customer.index(tempCustomer)] += tempData
     return customer, data
 
