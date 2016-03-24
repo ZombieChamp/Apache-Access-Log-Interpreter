@@ -1,4 +1,4 @@
-#Build 2.4.6
+#Build 2.5.0
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -83,8 +83,11 @@ def main(argv):
     for directory in inputDirectory:
         walkDirectory(directory, timeIntMonth, timeYear, customer, data)
     with open(resultsFile, 'w') as currentFile:
+        totalData = 0
         for name in customer:
+            totalData += data[customer.index(name)]
             currentFile.write('{},{}\n'.format(name, data[customer.index(name)]))
+        currentFile.write('{},{}\n'.format('TOTAL', totalData))
     print('That took {} seconds'.format(time() - startTime))
 
 if __name__ == '__main__':
