@@ -1,4 +1,4 @@
-#Build 2.6.0
+#Build 2.7.0
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -16,8 +16,7 @@ def find_between(s, first, last):
 
 def walkDirectory(directory, month, year, customer, data):
     for selectedFile in listdir(directory):
-        #Only scan access_SSL files in directory with this year and this month
-        if selectedFile.startswith('access_SSL_' + year + '-' + month):
+        if selectedFile.startswith('access_SSL_' + year + '-' + month): #Scan last months files
             parseFile(directory + '/' + selectedFile, customer, data)
     return customer, data
 
@@ -25,11 +24,11 @@ def parseFile(filePath, customer, data):
     with open(filePath) as logFile:
         print(filePath)
         for logLine in logFile:
-            if logLine.endswith('\n'):#Remove Trailing n
+            if logLine.endswith('\n'): #Remove trailing n
                 logLine = logLine[:-1]
             tempLine = logLine.split(' ')
             tempLineLen = len(tempLine)
-            if (tempLine[tempLineLen - 1] != '-'): #Don't process if data unknown
+            try:
                 tempData = int(tempLine[tempLineLen - 1])
                 if (tempLine[tempLineLen - 2][:1] == '2'): #Check for successful requests
                     tempFindBetween = find_between(find_between(logLine, ' \"', '\" '), ' ', ' ')
@@ -40,9 +39,11 @@ def parseFile(filePath, customer, data):
                         tempCustomer = find_between(tempFindBetween, '/', '/')
                         arrayID = 2
                     tempArray = tempFindBetween.split('/')
-                    if len(tempArray) > arrayID: #Don't indexoutofbounds
+                    try:
                         if tempArray[arrayID] == 'rest': #Categorise REST requests seperatly
                             tempCustomer += '/rest'
+                    except IndexError:
+                        pass
                 else: #Unsuccessful requests are logged as errors
                     tempCustomer = 'ERROR'
                 if tempCustomer == '': #Define blank as ROOT directory
@@ -52,6 +53,8 @@ def parseFile(filePath, customer, data):
                     data.append(tempData)
                 else: #Add data to customer if found
                     data[customer.index(tempCustomer)] += tempData
+            except ValueError:
+                pass
     return customer, data
 
 def main(argv):
@@ -66,9 +69,9 @@ def main(argv):
         print('Apache_Access_Log_Interpreter.py -i <inputdirectories> -o <outputdirectory>')
         exit(1)
     for opt, arg in opts:
-        if opt in ('-i', '--input'):
+        if opt in ('-i', '--input'): #Input folders
             inputDirectory = arg.split(',')
-        elif opt in ('-o', '--output'):
+        elif opt in ('-o', '--output'): #Output file
             resultsDirectory = arg
     #Only scan logs from last month
     timeLastMonth = date.today().replace(day = 1) - timedelta(days = 1)
