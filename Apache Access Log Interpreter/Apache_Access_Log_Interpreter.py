@@ -1,4 +1,4 @@
-#Build 2.7.0
+#Build 2.7.1
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -62,8 +62,7 @@ def main(argv):
     data = []
     inputDirectory = []
     resultsDirectory = ''
-    #Get argument input
-    try:
+    try: #Get argument input
         opts, args = getopt(argv, 'i:o:', ['input=','output='])
     except GetoptError:
         print('Apache_Access_Log_Interpreter.py -i <inputdirectories> -o <outputdirectory>')
