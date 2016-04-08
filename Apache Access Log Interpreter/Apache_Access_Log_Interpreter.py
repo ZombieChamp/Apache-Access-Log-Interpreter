@@ -1,4 +1,4 @@
-#Build 2.7.1
+#Build 2.7.2
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -32,7 +32,7 @@ def parseFile(filePath, customer, data):
                 tempData = int(tempLine[tempLineLen - 1])
                 if (tempLine[tempLineLen - 2][:1] == '2'): #Check for successful requests
                     tempFindBetween = find_between(find_between(logLine, ' \"', '\" '), ' ', ' ')
-                    if  tempFindBetween[:5] == 'https': #Loadbalanced requests
+                    if  tempFindBetween[:5] == 'https': #Proxy Server requests
                         tempCustomer = find_between(tempFindBetween, 'm/', '/')
                         arrayID = 4
                     else: #Regular requests
