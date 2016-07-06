@@ -1,4 +1,4 @@
-#Build 2.7.2
+#Build 2.8.0
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -41,13 +41,19 @@ def parseFile(filePath, customer, data):
                     tempArray = tempFindBetween.split('/')
                     try:
                         if tempArray[arrayID] == 'rest': #Categorise REST requests seperatly
-                            tempCustomer += '/rest'
+                            tempCustomer += '/rest'        
                     except IndexError:
                         pass
+                    #try:
+                    #    if tempArray[arrayID] == 'resources' and tempArray[arrayID + 1] == 'sunlight':
+                    #        tempCustomer = '/resources/sunlight/{}'.format(tempArray[arrayID + 2])
+                    #except IndexError:
+                    #    pass
                 else: #Unsuccessful requests are logged as errors
                     tempCustomer = 'ERROR'
                 if tempCustomer == '': #Define blank as ROOT directory
                     tempCustomer = 'ROOT'
+                data[customer.index(tempLine[5][1:])] += tempData #Seperate Counter for GET/POST data
                 if tempCustomer not in customer:  #Add customer to list if not detected before
                     customer.append(tempCustomer)
                     data.append(tempData)
@@ -58,8 +64,8 @@ def parseFile(filePath, customer, data):
     return customer, data
 
 def main(argv):
-    customer = []
-    data = []
+    customer = ['GET', 'POST']
+    data = [0, 0]
     inputDirectory = []
     resultsDirectory = ''
     try: #Get argument input
@@ -84,7 +90,8 @@ def main(argv):
     with open(resultsFile, 'w') as currentFile:
         totalData = 0
         for name in customer:
-            totalData += data[customer.index(name)]
+            if name not in ('GET', 'POST'): #Don't add GET/POST data to the total
+                totalData += data[customer.index(name)]
             currentFile.write('{},{}\n'.format(name, data[customer.index(name)]))
         currentFile.write('{},{}\n'.format('TOTAL', totalData))
     print('That took {} seconds'.format(time() - startTime))
