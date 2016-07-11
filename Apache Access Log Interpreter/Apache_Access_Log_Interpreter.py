@@ -1,4 +1,4 @@
-#Build 2.8.0
+#Build 2.8.1
 
 from datetime import date, datetime, timedelta
 from getopt import getopt, GetoptError
@@ -16,7 +16,7 @@ def find_between(s, first, last):
 
 def walkDirectory(directory, month, year, customer, data):
     for selectedFile in listdir(directory):
-        if selectedFile.startswith('access_SSL_' + year + '-' + month): #Scan last months files
+        if selectedFile.startswith('access_SSL_' + year + '-' + month): #Only scan last months files
             parseFile(directory + '/' + selectedFile, customer, data)
     return customer, data
 
@@ -24,7 +24,7 @@ def parseFile(filePath, customer, data):
     with open(filePath) as logFile:
         print(filePath)
         for logLine in logFile:
-            if logLine.endswith('\n'): #Remove trailing n
+            if logLine.endswith('\n'): #Remove trailing newline
                 logLine = logLine[:-1]
             tempLine = logLine.split(' ')
             tempLineLen = len(tempLine)
@@ -44,16 +44,10 @@ def parseFile(filePath, customer, data):
                             tempCustomer += '/rest'        
                     except IndexError:
                         pass
-                    #try:
-                    #    if tempArray[arrayID] == 'resources' and tempArray[arrayID + 1] == 'sunlight':
-                    #        tempCustomer = '/resources/sunlight/{}'.format(tempArray[arrayID + 2])
-                    #except IndexError:
-                    #    pass
                 else: #Unsuccessful requests are logged as errors
                     tempCustomer = 'ERROR'
                 if tempCustomer == '': #Define blank as ROOT directory
                     tempCustomer = 'ROOT'
-                data[customer.index(tempLine[5][1:])] += tempData #Seperate Counter for GET/POST data
                 if tempCustomer not in customer:  #Add customer to list if not detected before
                     customer.append(tempCustomer)
                     data.append(tempData)
